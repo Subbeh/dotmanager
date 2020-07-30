@@ -1,0 +1,174 @@
+#!/bin/bash
+# dotfile manager
+declare -r DOT=$HOME/.dotfiles 2>/dev/null    # dotfile directory
+declare -r DOTCONF=profiles.dot 2>/dev/null   # profiles file
+export DOT DOTCONF
+
+git="git --git-dir=${DOT:?not set}/.git --work-tree=$DOT"
+
+[ ! -d "$DOT" ] && mkdir $DOT
+
+# base function
+# args: dot <sub-function ... | git command>
+main() {
+  local _cmd _file
+  retval=0
+  dotprofiles=(def)
+
+  source "${DOT}/${DOTCONF}"
+  shopt -s dotglob
+  
+  for _file in stow git ; do
+    if ! command -v $_file &> /dev/null ; then
+      echo ERROR: $_file could not be found
+      return
+    fi
+  done
+  
+  _cmd=$1 ; shift
+  if LC_ALL=C type _$_cmd 2> /dev/null | grep -q function ; then
+    _$_cmd $*
+  else
+    eval $git $_cmd "$@"
+  fi
+}
+
+# list git status without submodules
+# args: _status
+_status() {
+  $git status --ignore-submodules $*
+}
+
+
+# move files to the repository and create symbolic link to point to the existing location
+# args: _link <-d app-name> <file(s)>
+_link() {
+  local _arg _app _dir _file _root
+  if [[ "$1" == '-d' && ! -z $2 ]] ; then
+    _app=$2
+    shift 2
+  else
+    echo ERROR: please specify the app name with \"'-d [app-name] file(s)'\"
+    return
+  fi
+  
+  for _arg in $* ; do
+    if [ ! -f $_arg ] ; then
+      echo ERROR: no such file: $_arg
+      return
+    fi
+
+    [[ ! $_arg =~ ^/ ]] && _arg=$PWD/$_arg
+    [[ $_app =~ ^root_ ]] && _root='/'
+
+    _file=${_arg##*/}
+    
+    if [[ $_arg =~ ^$HOME ]] ; then
+      _dir=${_arg##*$HOME/}
+      _dir=${_dir%/*}/
+    else
+      _dir=${_arg%/*}
+      _dir=${_dir#*/}/
+    fi
+
+    mkdir -p "$DOT/$_app/$_dir" 2> /dev/null
+    if [ ! -d "$DOT/$_app/$_dir" ] ; then
+      echo ERROR: unable to create directory "$DOT/$_dir"
+      return
+    fi
+    echo INFO: moving file $_file to "$DOT/$_app/$_dir"
+    ${_root/\//sudo} mv "$_arg" "$DOT/$_app/$_dir" && _load $_app
+  done
+}
+
+
+# validate if files already exist before trying to create a symlink to the same location
+# args: _validate [-r] <app-name>
+_validate() {
+  local _root _arg _dir
+  if [ "$1" == '-r' ] ; then
+    _root='/'
+    shift
+  fi
+  for _arg in $* ; do
+    retval=$((retval|0))
+
+    _dir="$DOT/$_arg"
+    if [ ! -d "$_dir" ] ; then
+      echo ERROR: directory not found: "$_dir"
+      return
+    fi
+
+    echo INFO: validating files for $_arg ...
+    ${_root/\//sudo} stow -n -d $DOT -t ${_root:-$HOME} $_arg |& grep existing && retval=1
+  done
+
+  return $retval
+}
+
+
+# recreate and update symbolic links from repository
+# args: _load <[-g] | [-p profile-name(s)] | [app-names]>
+_load() {
+  local _profile _arg _list _root _app _apps=() _apps_sorted=()
+
+  # update the submodules within the repository
+  if [ "$1" == '-g' ] ; then
+   (
+     cd $DOT
+     git submodule init
+     git submodule update
+   )
+   shift
+  fi
+
+  [ -z "$1" ] && return
+
+  # load all apps for a specific profile
+  if [ "$1" == '-p' ] ; then
+    shift
+    [ $1 ] && dotprofiles=()
+    for _arg in $* ; do
+      dotprofiles+=($_arg)
+    done
+
+    for _profile in ${dotprofiles[*]} ; do
+      _list=${_profile}[@]
+      for _app in ${!_list} ; do
+        _apps+=($_app)
+      done
+    done
+  else
+    for _arg in $* ; do
+      _apps+=($_arg)
+    done
+  fi
+
+  IFS=$'\n' _apps_sorted=($(sort -u <<<"${_apps[*]}"))
+
+  for _app in ${_apps[*]} ; do
+    _validate $_app
+  done
+
+  if [ "$?" -eq 1 ] ; then
+    echo INFO: existing files found and need to be removed before being able to create symbolic links
+    return 1
+  fi
+
+  for _app in ${_apps[*]} ; do
+    [[ $_app =~ ^root_ ]] && _root='/'
+    echo INFO: restoring $_app ...
+    ${_root/\//sudo} stow -v -R -d $DOT -t ${_root:-$HOME} $_app
+  done
+}
+
+
+# list files in the repository
+# args: -
+_ls() {
+  $git ls-tree --full-tree -r --name-only HEAD | \
+    grep -ve ^.gitignore -e ^.gitmodules -e ^$DOTCONF -e ^dotmanager
+}
+
+# run main function
+main $*
