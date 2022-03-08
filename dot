@@ -4,9 +4,9 @@ declare -r DOT=$HOME/.dotfiles 2>/dev/null    # dotfile directory
 declare -r DOTCONF=profiles.dot 2>/dev/null   # profiles file
 export DOT DOTCONF
 
-git="git --git-dir=${DOT:?not set}/.git --work-tree=$DOT"
+git="git --git-dir="$DOT/.git" --work-tree=$DOT"
 
-[ ! -d "$DOT" ] && mkdir $DOT
+[ ! -d "$DOT" ] && mkdir "$DOT"
 
 # base function
 # args: dot <sub-function ... | git command>
@@ -36,7 +36,8 @@ main() {
 # list git status without submodules
 # args: _status
 _status() {
-  $git status --ignore-submodules $*
+  $git status --ignore-submodules --short $*
+  $git -C $DOT submodule foreach 'git -c color.status=always status --short' | awk '{ gsub(/\x27/,"") } /Entering/ { submodule=$2; next } { print submodule ": " $0 }'
 }
 
 
@@ -116,8 +117,7 @@ _load() {
   if [ "$1" == '-g' ] ; then
    (
      cd $DOT
-     git submodule init
-     git submodule update
+     $git -C "$DOT" submodule update --init --recursive
    )
    shift
   fi
