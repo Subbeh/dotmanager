@@ -156,7 +156,11 @@ _load() {
   fi
 
   for _app in ${_apps[*]} ; do
-    [[ $_app =~ ^root_ ]] && _root='/'
+    if [[ $_app =~ ^root_ ]] ; then
+      _root='/'
+      sudo chown -R root:root "$DOT/$_app"
+      sudo chmod -R og-wx "$DOT/$_app"
+    fi
     echo INFO: restoring $_app ...
     ${_root/\//sudo} stow -v -R -d $DOT -t ${_root:-$HOME} $_app
   done
