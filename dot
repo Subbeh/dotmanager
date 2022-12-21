@@ -4,7 +4,7 @@ declare -r DOT=$HOME/.dotfiles 2>/dev/null    # dotfile directory
 declare -r DOTCONF=profiles.dot 2>/dev/null   # profiles file
 export DOT DOTCONF
 
-git="git --git-dir="$DOT/.git" --work-tree=$DOT"
+git="git --git-dir=$DOT/.git --work-tree=$DOT"
 
 [ ! -d "$DOT" ] && mkdir "$DOT"
 
