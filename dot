@@ -117,7 +117,7 @@ _load() {
   if [ "$1" == '-g' ] ; then
    (
      cd $DOT
-     $git -C "$DOT" submodule update --init --recursive
+     $git -C "$DOT" submodule update --init --recursive --remote
    )
    shift
   fi
