@@ -54,7 +54,7 @@ _link() {
   fi
   
   for _arg in $* ; do
-    if [ ! -f $_arg ] ; then
+    if [ ! -e $_arg ] ; then
       echo ERROR: no such file: $_arg
       return
     fi
