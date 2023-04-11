@@ -2,7 +2,7 @@
 
 This is a bash script that manages your dotfiles by creating a git repository in your home directory and storing your dotfiles in it. It then creates symbolic links to the original files in your home directory. You can move your dotfiles to the repository and manage them with git commands.
 
-The script uses the `stow` utility to manage the symbolic links and requires `git` to access the dotfile repository.
+The script is used as a wrapper around the `stow` utility to manage the symbolic links and requires `git` to access the dotfile repository.
 
 
 
