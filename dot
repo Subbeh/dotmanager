@@ -34,7 +34,7 @@ main() {
 }
 
 # list git status including any submodules
-# args: _status
+# args: N/A
 _status() {
   $git status --ignore-submodules --short $*
   $git -C $DOT submodule foreach 'git -c color.status=always status --short' | awk '{ gsub(/\x27/,"") } /Entering/ { submodule=$2; next } { print submodule ": " $0 }'
