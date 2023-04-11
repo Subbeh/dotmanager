@@ -33,7 +33,7 @@ main() {
   fi
 }
 
-# list git status without submodules
+# list git status including any submodules
 # args: _status
 _status() {
   $git status --ignore-submodules --short $*
@@ -42,7 +42,7 @@ _status() {
 
 
 # move files to the repository and create symbolic link to point to the existing location
-# args: _link <-d app-name> <file(s)>
+# args: _link -d [<app-name>] [<object(s)>]
 _link() {
   local _arg _app _dir _file _root
   if [[ "$1" == '-d' && ! -z $2 ]] ; then
@@ -84,7 +84,7 @@ _link() {
 
 
 # validate if files already exist before trying to create a symlink to the same location
-# args: _validate [-r] <app-name>
+# args: _validate [-r] [<app-name>]
 _validate() {
   local _root _arg _dir
   if [ "$1" == '-r' ] ; then
@@ -109,7 +109,7 @@ _validate() {
 
 
 # recreate and update symbolic links from repository
-# args: _load <[-g] | [-p profile-name(s)] | [app-names]>
+# args: _load [-g | -p <profile-name(s)> | [<app-names>]]
 _load() {
   local _profile _arg _list _root _app _apps=() _apps_sorted=()
 
@@ -168,7 +168,7 @@ _load() {
 
 
 # list files in the repository
-# args: -
+# args: N/A
 _ls() {
   $git ls-tree --full-tree -r --name-only HEAD | \
     grep -ve ^.gitignore -e ^.gitmodules -e ^$DOTCONF -e ^dotmanager
