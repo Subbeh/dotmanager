@@ -11,7 +11,7 @@ The script is used as a wrapper around the `stow` utility to manage the symbolic
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/<username>/dotfile-manager.git ~/.dotfiles
+git clone https://github.com/Subbeh/dotmanager.git ~/.dotfiles
 ```
 
 2. Copy the script to your home directory:
