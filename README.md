@@ -4,12 +4,14 @@ This is a bash script that manages your dotfiles by creating a git repository in
 
 The script uses the `stow` utility to manage the symbolic links and requires `git` to access the dotfile repository.
 
+
+
 ## Installation
 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/<username>/dotfile-manager.git ~/.dotfile-manager
+git clone https://github.com/<username>/dotfile-manager.git ~/.dotfiles
 ```
 
 2. Copy the script to your home directory:
@@ -38,6 +40,25 @@ alias dot='~/dotfile-manager.sh'
 - `dot load [-g | -p <profile-name(s)> | [<app-names>]]`: Create and update symbolic links from the repository.
   - `-g`: update submodules within the repository
   - `-p`: use a profile from profiles.dot
+  
+### Profiles
+
+Profiles can be set up within the `$HOME/.dotfiles/profiles.dot` file to allow managing multiple dotfiles per environment:
+
+```
+servers=(
+  vim
+  bash
+  postgres
+)
+
+client=(
+  vim
+  zsh
+  x11
+  tmux
+)
+```
 
 ### Examples
 
