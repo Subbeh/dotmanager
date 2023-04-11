@@ -2,6 +2,8 @@
 
 This is a bash script that manages your dotfiles by creating a git repository in your home directory and storing your dotfiles in it. It then creates symbolic links to the original files in your home directory. You can move your dotfiles to the repository and manage them with git commands.
 
+The script uses the `stow` utility to manage the symbolic links and requires `git` to access the dotfile repository.
+
 ## Installation
 
 1. Clone the repository:
@@ -45,3 +47,7 @@ alias dot='~/dotfile-manager.sh'
 - `dot load vim`: Recreate and update symbolic links for the vim app.
 - `dot load -p dev server`: Recreate and update symbolic links for all apps in the dev and server profiles.
 - `dot load -g`: Update submodules within the repository before recreating and updating symbolic links.
+
+# Contributing
+
+Contributions are welcome! Feel free to open a pull request or an issue on the GitHub repository.
