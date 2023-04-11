@@ -31,15 +31,14 @@ alias dot='~/dotfile-manager.sh'
 ## Usage
 ### Commands
 
-- `dot help`: Display help message.
 - `dot status`: Show the status of the git repository and any submodules.
-- `dot link <-d app-name> <file(s)>`: Move files to the repository and create symbolic links to the original location.
-- `dot validate [-r] <app-name>`: Validate if files already exist before trying to create a symlink to the same location.
-- `dot load <[-g] | [-p profile-name(s)] | [app-names]>`: Recreate and update symbolic links from the repository.
+- `dot link -d [<app-name>] [<object(s)>]`: Move files to the repository and create symbolic links to the original location.
+- `dot load [-g | -p <profile-name(s)> | [<app-names>]]`: Create and update symbolic links from the repository.
+  - `-g`: update submodules within the repository
+  - `-p`: use a profile from profiles.dot
 
 ### Examples
 
-- `dot help`: Display help message.
 - `dot status`: Show the status of the git repository and any submodules.
 - `dot link -d vim .vimrc`: Move .vimrc file to the repository and create symbolic link to the original location.
 - `dot validate vim`: Validate if .vimrc file already exists before trying to create a symlink to the same location.
