@@ -26,7 +26,7 @@ main() {
   done
   
   _cmd=$1 ; shift
-  if LC_ALL=C type _$_cmd 2> /dev/null | grep -q function ; then
+  if declare -F _$_cmd > /dev/null 2>&1 ; then
     _$_cmd $*
   else
     eval $git $_cmd "$@"
