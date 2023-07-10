@@ -56,7 +56,7 @@ _link() {
 		_app=$2
 		shift 2
 	else
-		echo ERROR: please specify the app name with \"'-d [app-name] file(s)'\"
+		echo ERROR: please specify the app name with \"'[-s] [-d <app-name>] file(s)'\"
 		return
 	fi
 
