@@ -16,7 +16,7 @@ main() {
 	retval=0
 	dotprofiles=(def)
 
-	source "${DOT}/${DOTCONF}"
+	[[ -f "${DOT}/${DOTCONF}" ]] && source "${DOT}/${DOTCONF}"
 	shopt -s dotglob
 
 	for _file in stow git; do
