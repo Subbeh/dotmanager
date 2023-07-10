@@ -1,5 +1,6 @@
 #!/bin/bash
 # dotfile manager
+
 export DOT="$HOME/.dotfiles"
 export DOT_SECRET="$DOT/.secret"
 
