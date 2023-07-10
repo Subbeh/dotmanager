@@ -2,8 +2,6 @@
 # dotfile manager
 export DOT="$HOME/.dotfiles"
 export DOT_SECRET="$DOT/.secret"
-export DOTCONF=profiles.dot
-export DOT DOTCONF
 
 git="git --git-dir=$DOT/.git --work-tree=$DOT"
 
@@ -14,9 +12,7 @@ git="git --git-dir=$DOT/.git --work-tree=$DOT"
 main() {
 	local _cmd _file
 	retval=0
-	dotprofiles=(def)
 
-	[[ -f "${DOT}/${DOTCONF}" ]] && source "${DOT}/${DOTCONF}"
 	shopt -s dotglob
 
 	for _file in stow git; do
@@ -116,9 +112,9 @@ _validate() {
 }
 
 # recreate and update symbolic links from repository
-# args: _load [-g | -p <profile-name(s)> | [<app-names>]]
+# args: _load [-g] | [<app-names>]]
 _load() {
-	local _profile _arg _list _root _app _apps=() _apps_sorted=()
+	local _arg _list _root _app _apps=() _apps_sorted=()
 
 	# update the submodules within the repository
 	if [ "$1" == '-g' ]; then
@@ -131,25 +127,9 @@ _load() {
 
 	[ -z "$1" ] && return
 
-	# load all apps for a specific profile
-	if [ "$1" == '-p' ]; then
-		shift
-		[ $1 ] && dotprofiles=()
-		for _arg in $*; do
-			dotprofiles+=($_arg)
-		done
-
-		for _profile in ${dotprofiles[*]}; do
-			_list=${_profile}[@]
-			for _app in ${!_list}; do
-				_apps+=($_app)
-			done
-		done
-	else
-		for _arg in $*; do
-			_apps+=($_arg)
-		done
-	fi
+	for _arg in $*; do
+		_apps+=($_arg)
+	done
 
 	IFS=$'\n' _apps_sorted=($(sort -u <<<"${_apps[*]}"))
 
