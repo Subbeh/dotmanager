@@ -137,7 +137,19 @@ _load() {
 	echo INFO: validating files for $_arg ...
 	for dir in "$DOT" "$DOT_SECRET"; do
 		while read line; do
-			echo TEST $line
+			msg=$(echo $line | awk -F':|=>' '{ print $1 }')
+			file=$(echo $line | awk -F':|=>' '{ print $2 }')
+			src=$(echo $line | awk -F':|=>' '{ print $2 }')
+
+			case "$msg" in
+			"*link not a directory*")
+				if [[ -d "${file%/*}" ]]; then
+					mkdir -p "$DOT_BACKUP/${file%/*}"
+				fi
+				cp "$file" "$DOT_BACKUP/${file%/*}"
+				;;
+			"*stowed*") rm $file ;;
+			esac
 		done <<<"$(${_root/\//sudo} stow -n -d "$dir" -t ${_root:-$HOME} $_arg |& grep "existing target")"
 	done
 
