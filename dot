@@ -146,7 +146,7 @@ _load() {
 				if [[ -d "${file%/*}" ]]; then
 					mkdir -p "$DOT_BACKUP/${file%/*}"
 				fi
-				cp "$file" "$DOT_BACKUP/${file%/*}"
+				mv "$file" "$DOT_BACKUP/${file%/*}"
 				;;
 			"*stowed*") rm $file ;;
 			esac
