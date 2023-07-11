@@ -137,9 +137,9 @@ _load() {
 	echo INFO: validating files for $_arg ...
 	for dir in "$DOT" "$DOT_SECRET"; do
 		while read line; do
-			msg=$(echo $line | awk -F':|=>' '{ print $1 }')
-			file=$(echo $line | awk -F':|=>' '{ print $2 }')
-			src=$(echo $line | awk -F':|=>' '{ print $2 }')
+			msg=$(echo $line | awk -F': | => ' '{ print $1 }')
+			file=$(echo $line | awk -F': | => ' '{ print $2 }')
+			src=$(echo $line | awk -F': | => ' '{ print $2 }')
 
 			case "$msg" in
 			*"link nor a directory"*)
