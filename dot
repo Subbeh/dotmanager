@@ -19,7 +19,7 @@ main() {
 	for _file in stow git; do
 		if ! command -v $_file &>/dev/null; then
 			echo ERROR: $_file could not be found
-			return
+			exit 1
 		fi
 	done
 
@@ -54,13 +54,13 @@ _link() {
 		shift 2
 	else
 		echo ERROR: please specify the app name with \"'[-s] [-d <app-name>] file(s)'\"
-		return
+		exit 1
 	fi
 
 	for _arg in $*; do
 		if [ ! -e $_arg ]; then
 			echo ERROR: no such file: $_arg
-			return
+			exit 1
 		fi
 
 		[[ ! $_arg =~ ^/ ]] && _arg=$PWD/$_arg
@@ -79,7 +79,7 @@ _link() {
 		mkdir -p "$DOT/$_app/$_dir" 2>/dev/null
 		if [ ! -d "$DOT/$_app/$_dir" ]; then
 			echo ERROR: unable to create directory "$DOT/$_dir"
-			return
+			exit 1
 		fi
 		echo INFO: moving file $_file to "$DOT/$_app/$_dir"
 		${_root/\//sudo} mv "$_arg" "$DOT/$_app/$_dir" && _load $_app
@@ -100,7 +100,7 @@ _validate() {
 		_dir="$DOT/$_arg"
 		if ! [[ -d "$_dir" || -d "$DOT_SECRET/$_arg" ]]; then
 			echo ERROR: directory not found: "$_dir"
-			return
+			exit 1
 		fi
 
 		echo INFO: validating files for $_arg ...
