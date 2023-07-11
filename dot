@@ -3,6 +3,7 @@
 
 export DOT="$HOME/.dotfiles"
 export DOT_SECRET="$DOT/.secret"
+export DOT_BACKUP="$DOT/.backup"
 
 git="git --git-dir=$DOT/.git --work-tree=$DOT"
 
@@ -102,11 +103,6 @@ _validate() {
 			echo ERROR: directory not found: "$_dir"
 			exit 1
 		fi
-
-		echo INFO: validating files for $_arg ...
-		for dir in "$DOT" "$DOT_SECRET"; do
-			${_root/\//sudo} stow -n -d "$dir" -t ${_root:-$HOME} $_arg |& grep existing && retval=1
-		done
 	done
 
 	return $retval
@@ -138,9 +134,16 @@ _load() {
 		_validate $_app
 	done
 
+	echo INFO: validating files for $_arg ...
+	for dir in "$DOT" "$DOT_SECRET"; do
+		while read line; do
+			echo TEST $line
+		done <<<"$(${_root/\//sudo} stow -n -d "$dir" -t ${_root:-$HOME} $_arg |& grep "existing target")"
+	done
+
 	if [ "$?" -eq 1 ]; then
-		echo INFO: existing files found and need to be removed before being able to create symbolic links
-		return 1
+		echo WARNING: existing file found. Moving it to ${DOT_BACKUP:?not set}
+
 	fi
 
 	for _app in ${_apps[*]}; do
