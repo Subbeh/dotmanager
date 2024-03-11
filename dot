@@ -162,8 +162,10 @@ _load() {
 		for dir in "$DOT" "$DOT_SECRET"; do
 			if [[ $_app =~ ^root_ ]]; then
 				_root='/'
-				sudo chown -R root:root "$dir/$_app"
-				sudo chmod -R og-w "$dir/$_app"
+				if [[ -d "$dir/$_app" ]]; then
+					sudo chown -R root:root "$dir/$_app"
+					sudo chmod -R og-w "$dir/$_app"
+				fi
 			fi
 			echo INFO: restoring $_app ...
 			test -d $dir/$_app && ${_root/\//sudo} stow -v --no-folding -R -d $dir -t ${_root:-$HOME} $_app || echo INFO: no app found in $dir
