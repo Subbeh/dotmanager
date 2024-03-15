@@ -10,7 +10,8 @@ git="git --git-dir=$DOT/.git --work-tree=$DOT"
 [ ! -d "$DOT" ] && mkdir "$DOT"
 
 # base function
-# args: dot <sub-function ... | git command>
+# args: dot [-r] <sub-function ... | git command>
+#   -r: use relative path
 main() {
 	local _cmd _file
 	retval=0
@@ -23,6 +24,11 @@ main() {
 			exit 1
 		fi
 	done
+
+	if [[ "$1" == "-r" ]]; then
+		pushd "$DOT"
+		shift
+	fi
 
 	_cmd=$1
 	shift
